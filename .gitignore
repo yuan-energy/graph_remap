@@ -1,0 +1,7 @@
+*.a
+*.o
+*.so
+thirdParty/libscotch/dummysizes
+tests/test
+
+

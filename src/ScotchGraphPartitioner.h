@@ -40,6 +40,7 @@ public:
      ~ScotchGraphPartitioner();
 
     int partition( Graph* theGraph, int numParts ) ;
+    int repartition( Graph* theGraph, int numParts ) ;
 
     int createGraph();
     int buildGraphInScotchFormat();
@@ -48,8 +49,7 @@ public:
     int getNumVertices();
 
     SCOTCH_Graph* getGraphPtr();
-	bool partition(SCOTCH_Graph *graph, SCOTCH_Arch *arch, SCOTCH_Strat *strat, SCOTCH_Num *parttab);
-	
+    
 
     int buildScotchGraph(Graph* theGraph);
     int createArch();
@@ -64,14 +64,19 @@ public:
 
 
 
-	// SCOTCH_Manual: Page 85. 
+    // SCOTCH_Manual: Page 85. 
     SCOTCH_Num _numEdges;    // 
     SCOTCH_Num _numVertices; // numVertices
     SCOTCH_Num _vertnbr;     // numVertices
     SCOTCH_Num _edgenbr;     // numArcs = 2 * _numEdges, 
     SCOTCH_Num _baseval ;    // baseValue
 private:
-
+	bool partition(SCOTCH_Graph *graph, SCOTCH_Arch *arch, SCOTCH_Strat *strat, SCOTCH_Num *parttab);
+    bool repartition(SCOTCH_Graph *graph, SCOTCH_Arch *arch, 
+        SCOTCH_Num* parotab,
+        const double emraval,
+        SCOTCH_Num* vmlotab,
+        SCOTCH_Strat *strat, SCOTCH_Num* parttab);
 
 
 
@@ -87,6 +92,9 @@ private:
     SCOTCH_Num* _edgetab ;   // verticeAdjacentArray
 
     SCOTCH_Num* _edlotab ;   // ArcWeightArray
+
+    SCOTCH_Num* _parotab ; 
+    SCOTCH_Num* _vmlotab ;
 
     SCOTCH_Graph*   _graph ; 
     SCOTCH_Arch*    _arch ; 

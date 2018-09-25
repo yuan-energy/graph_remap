@@ -62,6 +62,13 @@ partition( Graph* theGraph, int numParts )
 		    vertexPtr->setColor(parttab[vert] + 1); // start colors at 1
 		}
 
+		// save old partition for remapping.
+		_parotab = new SCOTCH_Num[_numVertices] ; 
+		_vmlotab = new SCOTCH_Num[_numVertices] ; 
+		for (int i = 0; i < this->_numVertices; ++i) {
+			_parotab[i] = parttab[i] ; 
+			_vmlotab[i] = 1.0 ; 
+		}
 		// clean up the space and return
 		// delete [] parttab ;
 
@@ -125,6 +132,89 @@ partition(SCOTCH_Graph *graph, SCOTCH_Arch *arch, SCOTCH_Strat *strat, SCOTCH_Nu
 
 
 
+int 
+ScotchGraphPartitioner::
+repartition( Graph* graph, int numParts ) {
+	this->createGraph() ;
+	this->buildScotchGraph(graph) ;
+
+
+	SCOTCH_Num * parttab = new SCOTCH_Num[this->_numVertices];
+
+	const double emraval = 1.0 ; 
+
+	int success = this->repartition(
+			_graph, 
+			_arch, 
+				_parotab,
+				emraval,
+				_vmlotab,
+			_strat, 
+			parttab
+		);
+
+	cerr << " repartition Print results: " << endl ;
+	for (int i = 0; i < this->_numVertices; ++i)
+	{
+		cerr << parttab[i] << " " ; 
+	}
+	cerr << endl; 
+
+	return success ;
+}
+
+
+bool 
+ScotchGraphPartitioner::
+repartition(SCOTCH_Graph *graph, SCOTCH_Arch *arch, 
+	SCOTCH_Num* parotab,
+	const double emraval,
+	SCOTCH_Num* vmlotab,
+	SCOTCH_Strat *strat, SCOTCH_Num* parttab) 
+{
+	if(graph == 0) {
+		std::cout << "Graph Pointer error" << std::endl;
+	}
+	if(arch == 0) {
+		std::cout << "Arch Pointer error" << std::endl;
+	}
+	if(strat == 0) {
+		std::cout << "Strat Pointer error" << std::endl;
+	}
+	if(parttab == 0) {
+		std::cout << "parttab Pointer error" << std::endl;
+	}
+	if(parotab == 0 ){
+		std::cout << "parotab Pointer error" << std::endl;
+	}
+	if (emraval == 0 ){
+		std::cout << " emraval error " << std::endl ; 
+	}
+	if ( vmlotab == 0 )	{
+		std::cout << " vmlotab Pointer error " << std::endl ; 
+	}
+	if(graph == 0 || arch == 0 || strat == 0 || parttab == 0 || parotab==0 || emraval ==0 || vmlotab==0 ) {
+		std::cout << "Pointer error" << std::endl;
+		return false;
+	}
+	int success = SCOTCH_graphRemap(
+			graph, 
+			arch, 
+				parotab,
+				emraval,
+				vmlotab,
+			strat, 
+			parttab
+		);
+
+	// int SCOTCH_graphRemap (SCOTCH_Graph * const, const SCOTCH_Arch * const, SCOTCH_Num *, const double, const SCOTCH_Num *, SCOTCH_Strat * const, SCOTCH_Num * const);
+
+	if(success == 0) {
+		return true;
+	}
+	return false;
+
+}
 
 
 
@@ -190,7 +280,7 @@ buildScotchGraph(Graph *theGraph)
 	    }
 
 	    this->_verttab[id] = vTabID ; 
-	    this->_velotab[id] = 1 ; // ver.getWeight() ; // TODO: vertex weight
+	    this->_velotab[id] = vertexPtr->getWeight() ;
 
 	    // TODO: add edge-weights
 	    // auto AdjacentEdgeWeights =  ver.getAdjacentEdgeWeights(); 

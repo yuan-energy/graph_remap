@@ -74,6 +74,14 @@ int main(int argc, char const *argv[])
 
 	// delete []parttab ; 
 
+	auto vertexPtr = graph.getVertexPtr(10); 
+	vertexPtr->setWeight(10) ; 
+
+	partitioner.repartition(
+			&graph,
+			TEST_PARTITION_NUMBER
+		);
+
 	// cerr << " main end " << endl; 
 	return 0;
 }

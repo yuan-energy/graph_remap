@@ -69,7 +69,7 @@
 
 #define SCOTCH_VERSION 6
 #define SCOTCH_RELEASE 0
-#define SCOTCH_PATCHLEVEL 5
+#define SCOTCH_PATCHLEVEL 4
 
 /*+ Integer type. +*/
 
